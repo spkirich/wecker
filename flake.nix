@@ -2,7 +2,9 @@
   description = "A simple tool to execute a program at the given time";
 
   inputs = {
-    flake-utils.url = github:numtide/flake-utils;
+    flake-utils = {
+      url = github:numtide/flake-utils;
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils }:
@@ -12,12 +14,14 @@
 
       in
       {
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            cargo
-            rustc
-            rustfmt
-          ];
+        packages.default = pkgs.rustPlatform.buildRustPackage {
+          name = "wecker";
+
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+          };
+
+          src = ./.;
         };
 
         formatter = pkgs.nixpkgs-fmt;
