@@ -8,14 +8,23 @@ struct Cli {
 
     #[arg(long, value_parser = clap::value_parser!(u32).range(0..59))]
     minute: u32,
+
+    program: String,
+
+    args: Vec<String>,
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let cli = Cli::parse();
     let duration = duration_until(cli.hour, cli.minute);
 
     std::thread::sleep(duration);
-    println!("Now is the time!");
+
+    std::process::Command::new(cli.program)
+        .args(cli.args)
+        .spawn()?;
+
+    Ok(())
 }
 
 fn duration_until(hour: u32, minute: u32) -> std::time::Duration {
