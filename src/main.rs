@@ -2,47 +2,38 @@ use chrono::Timelike;
 use clap::Parser;
 
 #[derive(Parser)]
-struct Args {
-    #[arg(long)]
+struct Cli {
+    #[arg(long, value_parser = clap::value_parser!(u32).range(0..23))]
     hour: u32,
 
-    #[arg(long)]
+    #[arg(long, value_parser = clap::value_parser!(u32).range(0..59))]
     minute: u32,
 }
 
 fn main() {
-    let args = Args::parse();
+    let cli = Cli::parse();
+    let duration = duration_until(cli.hour, cli.minute);
 
-    match duration_until(args.hour, args.minute) {
-        None => {
-            eprintln!("The time is wrong!");
-            std::process::exit(1);
-        },
-
-        Some(duration) => {
-            println!("The time is right!");
-            std::thread::sleep(duration);
-            println!("Now is the time!");
-        },
-    }
+    std::thread::sleep(duration);
+    println!("Now is the time!");
 }
 
-fn duration_until(hour: u32, minute: u32) -> Option<std::time::Duration> {
+fn duration_until(hour: u32, minute: u32) -> std::time::Duration {
     let now = chrono::Local::now();
 
     let mut then = now
-        .with_hour(hour)?
-        .with_minute(minute)?
-        .with_second(0)?
-        .with_nanosecond(0)?;
+        .with_hour(hour)
+        .unwrap()
+        .with_minute(minute)
+        .unwrap()
+        .with_second(0)
+        .unwrap()
+        .with_nanosecond(0)
+        .unwrap();
 
     if now > then {
         then += chrono::Duration::days(1);
     }
 
-    let duration = (then - now)
-        .to_std()
-        .unwrap();
-
-    Some(duration)
+    (then - now).to_std().unwrap()
 }
