@@ -1,4 +1,6 @@
 {
+  description = "A simple tool to execute a program at the given time";
+
   inputs = {
     flake-utils.url = github:numtide/flake-utils;
   };

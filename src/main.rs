@@ -1,16 +1,21 @@
 use chrono::Timelike;
 use clap::Parser;
 
+/// Execute a program at the given time
 #[derive(Parser)]
 struct Cli {
+    /// Specify the hour
     #[arg(long, value_parser = clap::value_parser!(u32).range(0..23))]
     hour: u32,
 
+    /// Specify the minute
     #[arg(long, value_parser = clap::value_parser!(u32).range(0..59))]
     minute: u32,
 
+    /// Specify the program
     program: String,
 
+    /// Specify arguments of the program
     args: Vec<String>,
 }
 
